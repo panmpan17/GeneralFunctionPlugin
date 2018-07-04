@@ -1,0 +1,6 @@
+greeting:
+  - 嗨, %s
+  - 你好, %s
+goodbye:
+  - 掰掰, %s
+  - 再見, %s

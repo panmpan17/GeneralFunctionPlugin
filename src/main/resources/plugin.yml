@@ -1,0 +1,12 @@
+name: GeneralFunctionPlugin
+main: com.gmail.panmpan.GeneralFunctionPlugin.GeneralFunctionPlugin
+version: 1.2
+author: Michael Pan
+commands:
+  nick:
+    description: 改變你的暱稱
+    usage: /<command> <暱稱>
+  lightning:
+    description: 召喚閃電在玩家身上
+    usage: /<command> [player]
+    permission: op
