@@ -198,8 +198,19 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 			name = name + " (%s)".replace("%s", this.nicknames.get(player.getUniqueId()));
 		}
 		
-		String greeting = ChatColor.YELLOW + pickRandomStringFromList(greetings).replace("%s", name);
-		event.setJoinMessage(greeting);
+		String greeting = ChatColor.GREEN + "----- 歡迎來到 MiMe Bro 伺服器 -----\n";
+		greeting += ChatColor.RED + "1. 不准偷竊\n";
+		greeting += ChatColor.RED + "2. 不准破壞別人家\n";
+		greeting += ChatColor.RED + "3. 不准作弊開外掛\n";
+		greeting += ChatColor.RED + "4. 暱稱是讓人好叫你，不是讓你隨便亂改\n";
+		greeting += ChatColor.AQUA + "管理員: 幻墨 (Magic_lnk) 落心 (LShin0414)\n";
+				greeting += ChatColor.AQUA + "      星洛 (XavierLves) GaGa (GAGA0927)\n";
+		greeting += ChatColor.AQUA + "* 任何問題請問管理員，例如: 東西被偷、房子被破壞";
+		greeting += ChatColor.GREEN + "------------------------------";
+		
+		player.sendMessage(greeting);
+
+		event.setJoinMessage(ChatColor.YELLOW + pickRandomStringFromList(greetings).replace("%s", name));
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)

@@ -1,6 +1,6 @@
 name: GeneralFunctionPlugin
 main: com.gmail.panmpan.GeneralFunctionPlugin.GeneralFunctionPlugin
-version: 1.3
+version: 1.4
 author: Michael Pan
 commands:
   nick:
