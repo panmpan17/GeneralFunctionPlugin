@@ -6,17 +6,22 @@ commands:
   nick:
     description: 改變你的暱稱
     usage: /<command> <暱稱>
+    aliases: [n]
   lightning:
     description: 召喚閃電在玩家身上
     usage: /<command> [player]
     permission: op
+    aliases: [l]
   sethome:
     description: 在目前的位置設定家
     usage: /<command>
+    aliases: [sh]
   home:
     description: 傳送到家的位置
     usage: /<command>
-  # visit:
-  #   description: 造訪別人的家
-  #   usage: /<command>
+    aliases: [h]
+  visit:
+    description: 造訪別人的家
+    usage: /<command>
+    aliases: [v]
   #   permission: op

@@ -12,7 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -50,7 +49,7 @@ public class MyListener implements Listener {
         }
 
         if (ownerUUID.equals(player.getUniqueId())) {
-            return ownerUUID;
+            return null;
         }
 
         return ownerUUID;
@@ -104,8 +103,21 @@ public class MyListener implements Listener {
 	public void onPlaceBlock(BlockPlaceEvent event) {
         UUID ownerUUID = checkOverLapHomes(event.getBlock().getLocation(), event.getPlayer());
         if (ownerUUID != null) {
-            event.getPlayer().sendMessage("NO !");
+            if (event.getPlayer().isOp()) {
+                return;
+            }
+
             event.setCancelled(true);
+
+            Player owner = this.plugin.getServer().getPlayer(ownerUUID);
+            
+            if (owner == null) {
+				event.getPlayer().sendMessage(ChatColor.RED + "現在其他人家，不能建造");
+			}
+			else {
+				event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + owner.getDisplayName() + " 家，不能建造");
+			}
+			
         }
     }
 
@@ -113,8 +125,20 @@ public class MyListener implements Listener {
 	public void onBreakBlock(BlockBreakEvent event) {
         UUID ownerUUID = checkOverLapHomes(event.getBlock().getLocation(), event.getPlayer());
         if (ownerUUID != null) {
-            event.getPlayer().sendMessage("NO !");
+            if (event.getPlayer().isOp()) {
+                return;
+            }
+
             event.setCancelled(true);
+
+            Player owner = this.plugin.getServer().getPlayer(ownerUUID);
+
+            if (owner == null) {
+				event.getPlayer().sendMessage(ChatColor.RED + "現在其他人家，不能破壞");
+			}
+			else {
+                event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + owner.getDisplayName() + " 家，不能破壞");
+            }
         }
     }
 
