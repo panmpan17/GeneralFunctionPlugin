@@ -12,46 +12,29 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-//import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-//import org.bukkit.entity.Entity;
-//import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-//import org.bukkit.event.entity.EntityDamageByEntityEvent;
-//import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-//import org.bukkit.inventory.ItemStack;
-//import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
-	List<String> greetings = new ArrayList<String>(); 
-	List<String> goodbyes = new ArrayList<String>();
+public class GeneralFunctionPlugin extends JavaPlugin {
+	public List<String> greetings = new ArrayList<String>(); 
+	public List<String> goodbyes = new ArrayList<String>();
 	
 	private FileConfiguration customConfig = null;
 	private File customConfigFile = null;
-	private HashMap<UUID,String> nicknames = new HashMap<UUID,String>(); 
-	private HashMap<UUID,Location> homes = new HashMap<UUID,Location>();
-//	int HEADDROP_CHANCE = 2;
-
-//	private ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-//	private SkullMeta meta_skull = (SkullMeta) skull.getItemMeta();
-	
-	
+	public HashMap<UUID,String> nicknames = new HashMap<UUID,String>(); 
+	public HashMap<UUID,Location> homes = new HashMap<UUID,Location>();
+	// private HashMap<UUID, List<UUID>> breakWhitelist = new HashMap<UUID, List<UUID>>();	
 	
 	@Override
 	public void onEnable() {
 		parseConfigYml();
 		
-		getServer().getPluginManager().registerEvents(this, this);
+		getServer().getPluginManager().registerEvents(new MyListener(this), this);
 	}
 	
 	@Override
@@ -92,7 +75,7 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 		}
 		
 		try {
-			Player player = Bukkit.getPlayer(args[0]);
+			Player player = Bukkit.getPlayer(UUID.fromString(args[0]));
 			player.getWorld().strikeLightning(player.getLocation());
 		}
 		catch (Exception e) {
@@ -134,7 +117,6 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 		}
 	}
 	
-//	@SuppressWarnings("deprecation")
 //	private void handleVisitCommand(CommandSender sender, String[] args) {
 //		if (args.length < 1) {
 //			sender.sendMessage(ChatColor.RED + "必須指定一個玩家");
@@ -188,44 +170,6 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 		return new Location(world, x, y, z, yaw, pitch);
 	}
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		String name = player.getDisplayName();
-		
-		if (this.nicknames.containsKey(player.getUniqueId())) {
-			this.setNickname(player, this.nicknames.get(player.getUniqueId()));
-			name = name + " (%s)".replace("%s", this.nicknames.get(player.getUniqueId()));
-		}
-		
-		String greeting = ChatColor.GREEN + "----- 歡迎來到 MiMe Bro 伺服器 -----\n";
-		greeting += ChatColor.RED + "1. 不准偷竊\n";
-		greeting += ChatColor.RED + "2. 不准破壞別人家\n";
-		greeting += ChatColor.RED + "3. 不准作弊開外掛\n";
-		greeting += ChatColor.RED + "4. 暱稱是讓人好叫你，不是讓你隨便亂改\n";
-		greeting += ChatColor.AQUA + "管理員: 幻墨 (Magic_lnk) 落心 (LShin0414)\n";
-				greeting += ChatColor.AQUA + "      星洛 (XavierLves) GaGa (GAGA0927)\n";
-		greeting += ChatColor.AQUA + "* 任何問題請問管理員，例如: 東西被偷、房子被破壞";
-		greeting += ChatColor.GREEN + "------------------------------";
-		
-		player.sendMessage(greeting);
-
-		event.setJoinMessage(ChatColor.YELLOW + pickRandomStringFromList(greetings).replace("%s", name));
-	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		String name = player.getDisplayName();
-		
-		if (this.nicknames.containsKey(player.getUniqueId())) {
-			name = name + " (%s)".replace("%s", this.nicknames.get(player.getUniqueId()));
-		}
-		
-		String goodbye = ChatColor.YELLOW + pickRandomStringFromList(goodbyes).replace("%s", name);
-		event.setQuitMessage(goodbye);
-	}
-	
 	public void parseConfigYml() {
 		this.saveDefaultConfig();
 		FileConfiguration config = this.getConfig();
@@ -264,7 +208,7 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 		}
 	}
 	
-	private void setNickname(Player player, String nickname) {
+	public void setNickname(Player player, String nickname) {
 		player.setDisplayName(nickname);
 		player.setPlayerListName(nickname);
 		player.setCustomName(nickname);
@@ -277,10 +221,10 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 	
 	private void saveDefaultCustomConfigFile() {
 	    if (this.customConfigFile == null) {
-	        this.customConfigFile = new File(getDataFolder(), "nicknames.yml");
+	        this.customConfigFile = new File(getDataFolder(), "datas.yml");
 	    }
 	    if (!this.customConfigFile.exists()) {
-	    	this.saveResource("nicknames.yml", false);
+	    	this.saveResource("datas.yml", false);
 	    }
 	}
 	
@@ -300,24 +244,4 @@ public class GeneralFunctionPlugin extends JavaPlugin implements Listener {
 	        this.customConfig.save(this.customConfigFile);
 	    } catch (IOException ex) {}
 	}
-	
-//	@EventHandler
-//	public void onEntityDeath(EntityDeathEvent event) {
-//		if (event.getEntity().getType() == EntityType.PLAYER) {
-//			Player killer = event.getEntity().getKiller();
-//			if (killer != null) {
-//				float chance = ThreadLocalRandom.current().nextInt(1, (int) HEADDROP_CHANCE + 1);
-//
-//				getLogger().info(String.valueOf(chance));
-//				getLogger().info(String.valueOf(HEADDROP_CHANCE));
-//				if (chance == HEADDROP_CHANCE) {
-//					meta_skull.setOwner(event.getEntity().getName());
-//					skull.setItemMeta(meta_skull);
-//					
-//					killer.getInventory().addItem(skull);
-//					
-//				}
-//			}
-//		}
-//	}
 }
