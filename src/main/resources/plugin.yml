@@ -9,19 +9,34 @@ commands:
     aliases: [n]
   lightning:
     description: 召喚閃電在玩家身上
-    usage: /<command> [player]
+    usage: /<command> [玩家]
     permission: op
     aliases: [l]
-  sethome:
-    description: 在目前的位置設定家
-    usage: /<command>
-    aliases: [sh]
+  # sethome:
+  #   description: 在目前的位置設定家
+  #   usage: /<command>
+  #   aliases: [sh]
   home:
-    description: 傳送到家的位置
-    usage: /<command>
+    description: /home 傳送到家\n/home s 設定新家\n/home v <玩家名稱> 拜訪其他人家
+    usage: /<command> [s/v]
     aliases: [h]
-  visit:
-    description: 造訪別人的家
-    usage: /<command>
-    aliases: [v]
-  #   permission: op
+  # visit:
+  #   description: 造訪別人的家
+  #   usage: /<command>
+  #   aliases: [v]
+  allow:
+    description: 允許其他人在你家建造、破壞、打開箱子
+    usage: /<command> [玩家]
+    aliases: [a]
+  remove-allow:
+    description: 把玩家從允許名單移除，如果玩家不在線上建議用 /remove-allow-i
+    usage: /<command> [玩家]
+    aliases: [ra]
+  remove-allow-i:
+    description: 利用名單順序，把玩家從允許名單移除
+    usage: /<command> [玩家]
+    aliases: [rai]
+  allow-list:
+    description: 列出允許的玩家
+    usage: /<comand>
+    aliases: [al]

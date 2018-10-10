@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+// import org.bukkit.Bukkit;
+// import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+// import org.bukkit.command.Command;
+// import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,132 +35,14 @@ public class GeneralFunctionPlugin extends JavaPlugin {
 		parseConfigYml();
 		
 		getServer().getPluginManager().registerEvents(new MyListener(this), this);
+		this.getCommand("home").setExecutor(new HomeCommand(this));
+		this.getCommand("nick").setExecutor(new NickCommand(this));
+		this.getCommand("lightning").setExecutor(new LightningCommand(this));
 	}
 	
 	@Override
 	public void onDisable() {
 		this.saveCustomConfig();
-	}
-	
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player) {
-			if (cmd.getName().equalsIgnoreCase("nick")) {
-				this.handleNickCommand(sender, args);
-				return true;
-			}
-			else if (cmd.getName().equalsIgnoreCase("sethome")) {
-				this.handleSethomeCommand(sender);
-				return true;
-			}
-			else if (cmd.getName().equalsIgnoreCase("home")) {
-				this.handleHomeCommand(sender);
-				return true;
-			}
-			else if (cmd.getName().equalsIgnoreCase("visit")) {
-				this.handleVisitCommand(sender, args);
-				return true;
-			}
-		}
-		if (cmd.getName().equalsIgnoreCase("lightning")) {
-			this.handleLightningCommand(sender, args);
-			return true;
-		}
-		return false;
-	}
-	
-	private void handleLightningCommand(CommandSender sender, String[] args) {
-		if (args.length < 1) {
-			sender.sendMessage(ChatColor.RED + "必須指定一個玩家");
-			return;
-		}
-		
-		try {
-			Player player = Bukkit.getPlayer(UUID.fromString(args[0]));
-			player.getWorld().strikeLightning(player.getLocation());
-		}
-		catch (Exception e) {
-			sender.sendMessage(ChatColor.RED + "玩家不存在");
-			return;
-		}
-	}
-	
-	private void handleNickCommand(CommandSender sender, String[] args) {
-		if (args.length < 1) {
-			sender.sendMessage(ChatColor.RED + "必須指定一個暱稱");
-			return;
-		}
-		
-		Player player = (Player) sender;
-		String nickname = args[0];
-		this.nicknames.put(player.getUniqueId(), nickname);
-		this.setNickname(player, nickname);
-		sender.sendMessage(ChatColor.GREEN + "成功把暱稱改成 " + nickname);
-	}
-	
-	private void handleSethomeCommand(CommandSender sender) {
-		Player player = (Player) sender;
-		Location location = player.getLocation();
-
-		UUID ownerUUID = null;
-
-		for (UUID k: this.homes.keySet()) {
-            Location home = this.homes.get(k);
-			if (Math.abs(home.getBlockX() - location.getBlockX()) <= 25) {
-                if (Math.abs(home.getBlockZ() - location.getBlockZ()) <= 25) {
-                    ownerUUID = k;
-                    break;
-                }
-			}
-		}
-
-		if (ownerUUID == null) {
-			this.homes.put(player.getUniqueId(), location);
-			player.sendMessage(ChatColor.GREEN + "成功把家設在 " + stringfyLocation(location, true));
-		}
-		else {
-			Player owner = getServer().getPlayer(ownerUUID);
-
-			if (owner == null) {
-				player.sendMessage(ChatColor.RED + "離其他玩家家太近");
-			}
-			else {
-				player.sendMessage(ChatColor.RED + "離 " + owner.getDisplayName() + " 家太近");
-			}
-		}
-	}
-	
-	private void handleHomeCommand(CommandSender sender) {
-		Player player = (Player) sender;
-		
-		if (this.homes.containsKey(player.getUniqueId())) {
-			player.teleport(this.homes.get(player.getUniqueId()));
-			player.sendMessage(ChatColor.GOLD + "歡迎回家!");
-		}
-		else {
-			player.sendMessage(ChatColor.RED + "尚未設定家的位置");
-		}
-	}
-	
-	private void handleVisitCommand(CommandSender sender, String[] args) {
-		if (args.length < 1) {
-			sender.sendMessage(ChatColor.RED + "必須指定一個玩家");
-			return;
-		}
-		
-		Player player = (Player) sender;
-		Player targetPlayer = Bukkit.getOfflinePlayer(args[0]).getPlayer();
-		
-		if (targetPlayer == null) {
-			player.sendMessage(ChatColor.RED + "玩家不在線");
-			return;
-		}
-		
-		if (this.homes.containsKey(targetPlayer.getUniqueId())) {
-			player.teleport(this.homes.get(targetPlayer.getUniqueId()));
-			player.sendMessage(ChatColor.GOLD + "歡迎來到 " + targetPlayer.getDisplayName() + " 的家");
-			return;
-		}
 	}
 	
 	public String stringfyLocation(Location location, boolean simplefy) {

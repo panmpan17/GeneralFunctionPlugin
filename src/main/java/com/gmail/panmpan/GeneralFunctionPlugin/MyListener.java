@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +17,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -156,6 +159,29 @@ public class MyListener implements Listener {
         for (Block block: event.blockList()) {
             if (checkOverLapHomes(block.getLocation(), null) != null) {
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority=EventPriority.HIGHEST)
+	public void onOpenInventory(InventoryOpenEvent event) {
+		if (event.getInventory().getHolder() != null) {
+            UUID ownerUUID = checkOverLapHomes(event.getInventory().getLocation(), (Player) event.getPlayer());
+            if (ownerUUID != null) {
+                if (event.getPlayer().isOp()) {
+                    return;
+                }
+
+                event.setCancelled(true);
+
+                Player owner = this.plugin.getServer().getPlayer(ownerUUID);
+
+                if (owner == null) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "不能打開其他人的箱子");
+                }
+                else {
+                    event.getPlayer().sendMessage(ChatColor.RED + "不能打開 " + owner.getDisplayName() + " 的箱子");
+                }
             }
         }
     }
