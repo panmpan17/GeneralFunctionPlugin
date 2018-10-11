@@ -15,6 +15,9 @@ public class NickCommand implements CommandExecutor {
 
     @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+            return false;
+        }
 		if (args.length < 1) {
 			sender.sendMessage(ChatColor.RED + "必須指定一個暱稱");
 			return true;

@@ -7,8 +7,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -64,10 +62,9 @@ public class MyListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-        this.plugin.getLogger().info("Player Join Event");
-
 		Player player = event.getPlayer();
-		String name = player.getDisplayName();
+        String name = player.getDisplayName();
+        this.plugin.uuid2Names.put(player.getUniqueId(), name);
 		
 		if (this.plugin.nicknames.containsKey(player.getUniqueId())) {
 			this.plugin.setNickname(player, this.plugin.nicknames.get(player.getUniqueId()));

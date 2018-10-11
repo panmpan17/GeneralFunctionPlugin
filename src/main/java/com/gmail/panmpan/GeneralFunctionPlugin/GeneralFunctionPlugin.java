@@ -8,12 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-// import org.bukkit.Bukkit;
-// import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-// import org.bukkit.command.Command;
-// import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,9 +22,10 @@ public class GeneralFunctionPlugin extends JavaPlugin {
 	
 	private FileConfiguration customConfig = null;
 	private File customConfigFile = null;
-	public HashMap<UUID,String> nicknames = new HashMap<UUID,String>(); 
-	public HashMap<UUID,Location> homes = new HashMap<UUID,Location>();
-	// private HashMap<UUID, List<UUID>> breakWhitelist = new HashMap<UUID, List<UUID>>();	
+	public HashMap<UUID, String> nicknames = new HashMap<UUID,String>(); 
+	public HashMap<UUID, Location> homes = new HashMap<UUID,Location>();
+	public HashMap<UUID, List<UUID>> allowList = new HashMap<UUID, List<UUID>>();
+	public HashMap<UUID, String> uuid2Names = new HashMap<UUID, String>();
 	
 	@Override
 	public void onEnable() {
@@ -38,6 +35,7 @@ public class GeneralFunctionPlugin extends JavaPlugin {
 		this.getCommand("home").setExecutor(new HomeCommand(this));
 		this.getCommand("nick").setExecutor(new NickCommand(this));
 		this.getCommand("lightning").setExecutor(new LightningCommand(this));
+		this.getCommand("allow-list").setExecutor(new AllowListCommand(this));
 	}
 	
 	@Override

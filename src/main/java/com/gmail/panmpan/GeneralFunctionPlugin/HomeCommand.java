@@ -16,31 +16,29 @@ public class HomeCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    private void logInfo(String msg) {
-        this.plugin.getLogger().info(msg);
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player) {
-            if (args.length == 0) {
-                this.TeleportHome(sender);
-                return true;
-            }
-            else if (args[0].equalsIgnoreCase("s")) {
-                this.SetHome(sender);
-                return true;
-            }
-            else if (args[0].equalsIgnoreCase("v")) {
-                if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "請指定要拜訪的玩家");
-                    return true;
-                }
+        if (!(sender instanceof Player)) {
+            return false;
+		}
+		
+		if (args.length == 0) {
+			this.TeleportHome(sender);
+			return true;
+		}
+		else if (args[0].equalsIgnoreCase("s")) {
+			this.SetHome(sender);
+			return true;
+		}
+		else if (args[0].equalsIgnoreCase("v")) {
+			if (args.length < 2) {
+				sender.sendMessage(ChatColor.RED + "請指定要拜訪的玩家");
+				return true;
+			}
 
-                this.VisitHome(sender, args[1]);
-                return true;
-            }
-        }
+			this.VisitHome(sender, args[1]);
+			return true;
+		}
         return false;
     }
 
