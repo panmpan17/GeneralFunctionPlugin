@@ -17,6 +17,10 @@ public class AllowListCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    // private void logInfo (String msg) {
+    //     this.plugin.getServer().getLogger().info(msg);
+    // }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -26,7 +30,8 @@ public class AllowListCommand implements CommandExecutor {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         if (args.length == 0) {
-            String help = ChatColor.AQUA + "/allow-list add <玩家>" + ChatColor.WHITE + " 允許玩家在你家破壞、建造、開箱\n";
+            String help = ChatColor.GOLD + "現在家自動有 25 格內保護，\n這個指令可以加入你的朋友，\n讓他們也可以在你家建造\n\n";
+            help += ChatColor.AQUA + "/allow-list add <玩家>" + ChatColor.WHITE + " 允許玩家在你家破壞、建造、開箱\n";
             help += ChatColor.AQUA + "/allow-list remove <玩家>" + ChatColor.WHITE + " 把玩家從允許名單中移除\n";
             help += ChatColor.AQUA + "/allow-list removei <名單順序>" + ChatColor.WHITE + " 和 remove 一樣功能\n";
             help += ChatColor.GRAY + "＊ 適用於離線玩家，查詢名單順序請打 /allow-list list\n";
@@ -69,7 +74,9 @@ public class AllowListCommand implements CommandExecutor {
 
             Player targetPlayer = this.plugin.getServer().getPlayer(args[1]);
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.RED + "玩家不在線或不存在");
+                String msg = ChatColor.RED + "玩家不在線或不存在\n";
+                msg += ChatColor.GRAY + "也可以使用 /allow-list removei，更多資訊打 /allow-list";
+                sender.sendMessage(msg);
                 return true;
             }
             if (targetPlayer.getUniqueId().equals(playerUUID)) {
@@ -83,7 +90,7 @@ public class AllowListCommand implements CommandExecutor {
                 return true;
             }
 
-            if (this.plugin.allowList.get(playerUUID).contains(targetPlayer.getUniqueId())) {
+            if (!this.plugin.allowList.get(playerUUID).contains(targetPlayer.getUniqueId())) {
                 sender.sendMessage(ChatColor.RED + "玩家不在名單中");
                 return true;
             }
@@ -101,25 +108,28 @@ public class AllowListCommand implements CommandExecutor {
             try {
                 index = Integer.parseInt(args[1]);
             } catch (Exception e) {
-                //TODO: handle exception
                 sender.sendMessage(ChatColor.RED + "必須是一個數字");
                 return true;
             }
 
-            if (this.plugin.allowList.containsKey(playerUUID)) {
+            if (!this.plugin.allowList.containsKey(playerUUID)) {
                 this.plugin.allowList.put(playerUUID, new ArrayList<UUID>());
                 sender.sendMessage(ChatColor.RED + "這數字超過名單長度");
                 return true;
             }
-            if (index < this.plugin.allowList.get(playerUUID).size()) {
+            if (index >= this.plugin.allowList.get(playerUUID).size()) {
                 sender.sendMessage(ChatColor.RED + "這數字超過名單長度");
                 return true;
             }
 
-            this.plugin.allowList.get(playerUUID).remove(index);
+            this.plugin.allowList.get(playerUUID).remove((int) index);
             sender.sendMessage(ChatColor.GREEN + "玩家從名單移除");
         }
         else if (args[0].equalsIgnoreCase("list")) {
+            if (!this.plugin.allowList.containsKey(playerUUID)) {
+                this.plugin.allowList.put(playerUUID, new ArrayList<UUID>());
+            }
+
             String list = ChatColor.GOLD + "以下是你名單中的玩家:\n";
 
             Integer index = 0;

@@ -23,6 +23,11 @@ public class NickCommand implements CommandExecutor {
 			return true;
 		}
 
+		if (args[0].length() > 12) {
+			sender.sendMessage(ChatColor.RED + "暱稱不能超過 12 個字");
+			return true;
+		}
+
 		Player player = (Player) sender;
 		String nickname = args[0];
 		this.plugin.nicknames.put(player.getUniqueId(), nickname);

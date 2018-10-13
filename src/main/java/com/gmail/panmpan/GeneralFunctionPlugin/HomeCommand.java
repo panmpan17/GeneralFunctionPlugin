@@ -39,6 +39,15 @@ public class HomeCommand implements CommandExecutor {
 			this.VisitHome(sender, args[1]);
 			return true;
 		}
+		else if (args[0].equalsIgnoreCase("help")) {
+			String help = ChatColor.GOLD + "家功能 1.快速傳送 2.玩家拜訪 3.領地保護 (更多資訊在 /allow-list)\n\n";
+            help += ChatColor.AQUA + "/home" + ChatColor.WHITE + " 傳送到家裡\n";
+            help += ChatColor.AQUA + "/home s" + ChatColor.WHITE + " 設定家的位置\n";
+            help += ChatColor.AQUA + "/home v <玩家>" + ChatColor.WHITE + " 拜訪別人家裡\n";
+			sender.sendMessage(help);
+			
+			return true;
+		}
         return false;
     }
 
@@ -75,13 +84,11 @@ public class HomeCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.GREEN + "成功把家設在 " + this.plugin.stringfyLocation(location, true));
 		}
 		else {
-			Player owner = this.plugin.getServer().getPlayer(ownerUUID);
-
-			if (owner == null) {
-				player.sendMessage(ChatColor.RED + "離其他玩家家太近");
+			if (this.plugin.uuid2Names.containsKey(ownerUUID)) {
+				player.sendMessage(ChatColor.RED + "離 " + this.plugin.uuid2Names.get(ownerUUID) + " 家太近");
 			}
 			else {
-				player.sendMessage(ChatColor.RED + "離 " + owner.getDisplayName() + " 家太近");
+				player.sendMessage(ChatColor.RED + "離其他人家太近");
 			}
 		}
     }
@@ -98,6 +105,7 @@ public class HomeCommand implements CommandExecutor {
 		if (this.plugin.homes.containsKey(targetPlayer.getUniqueId())) {
 			player.teleport(this.plugin.homes.get(targetPlayer.getUniqueId()));
 			player.sendMessage(ChatColor.GOLD + "歡迎來到 " + targetPlayer.getDisplayName() + " 的家");
+			targetPlayer.sendMessage(ChatColor.AQUA + player.getDisplayName() + " 來拜訪妳了");
 			return;
 		}
     }

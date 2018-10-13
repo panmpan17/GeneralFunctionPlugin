@@ -52,6 +52,11 @@ public class MyListener implements Listener {
         if (ownerUUID.equals(player.getUniqueId())) {
             return null;
         }
+        if (this.plugin.allowList.containsKey(ownerUUID)) {
+            if (this.plugin.allowList.get(ownerUUID).contains(player.getUniqueId())) {
+                return null;
+            }
+        }
 
         return ownerUUID;
     }
@@ -111,11 +116,11 @@ public class MyListener implements Listener {
 
             Player owner = this.plugin.getServer().getPlayer(ownerUUID);
             
-            if (owner == null) {
-				event.getPlayer().sendMessage(ChatColor.RED + "現在其他人家，不能建造");
+            if (this.plugin.uuid2Names.containsKey(ownerUUID)) {
+                event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + this.plugin.uuid2Names.get(ownerUUID) + " 家，不能建造");
 			}
 			else {
-				event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + owner.getDisplayName() + " 家，不能建造");
+				event.getPlayer().sendMessage(ChatColor.RED + "現在其他人家，不能建造");
 			}
 			
         }
@@ -131,13 +136,11 @@ public class MyListener implements Listener {
 
             event.setCancelled(true);
 
-            Player owner = this.plugin.getServer().getPlayer(ownerUUID);
-
-            if (owner == null) {
-				event.getPlayer().sendMessage(ChatColor.RED + "現在其他人家，不能破壞");
+            if (this.plugin.uuid2Names.containsKey(ownerUUID)) {
+                event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + this.plugin.uuid2Names.get(ownerUUID) + " 家，不能破壞");
 			}
 			else {
-                event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + owner.getDisplayName() + " 家，不能破壞");
+                event.getPlayer().sendMessage(ChatColor.RED + "現在其他人家，不能破壞");
             }
         }
     }
@@ -171,13 +174,11 @@ public class MyListener implements Listener {
 
                 event.setCancelled(true);
 
-                Player owner = this.plugin.getServer().getPlayer(ownerUUID);
-
-                if (owner == null) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "不能打開其他人的箱子");
+                if (this.plugin.uuid2Names.containsKey(ownerUUID)) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "不能打開 " + this.plugin.uuid2Names.get(ownerUUID) + " 的箱子");
                 }
                 else {
-                    event.getPlayer().sendMessage(ChatColor.RED + "不能打開 " + owner.getDisplayName() + " 的箱子");
+                    event.getPlayer().sendMessage(ChatColor.RED + "不能打開其他人家的箱子");
                 }
             }
         }

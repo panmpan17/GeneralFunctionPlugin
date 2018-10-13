@@ -29,13 +29,13 @@ public class GeneralFunctionPlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		parseConfigYml();
-		
 		getServer().getPluginManager().registerEvents(new MyListener(this), this);
 		this.getCommand("home").setExecutor(new HomeCommand(this));
 		this.getCommand("nick").setExecutor(new NickCommand(this));
 		this.getCommand("lightning").setExecutor(new LightningCommand(this));
 		this.getCommand("allow-list").setExecutor(new AllowListCommand(this));
+
+		this.parseConfigYml();
 	}
 	
 	@Override
@@ -97,17 +97,35 @@ public class GeneralFunctionPlugin extends JavaPlugin {
 		this.customConfig = YamlConfiguration.loadConfiguration(this.customConfigFile);
 		ConfigurationSection nicknamesConfig = this.customConfig.getConfigurationSection("nicknames");
 		ConfigurationSection homesConfig = this.customConfig.getConfigurationSection("homes");
+		ConfigurationSection allowlistConfig = this.customConfig.getConfigurationSection("allowlist");
+		ConfigurationSection uuid2nameConfig = this.customConfig.getConfigurationSection("uuid2name");
 		
-		for(String key: nicknamesConfig.getKeys(true)){
-			UUID playerUUID = UUID.fromString(key);
-			String nickname = nicknamesConfig.getString(key);
-			this.nicknames.put(playerUUID, nickname);
+		if (nicknamesConfig.getKeys(true) != null) {
+			for(String key: nicknamesConfig.getKeys(true)){
+				UUID playerUUID = UUID.fromString(key);
+				String nickname = nicknamesConfig.getString(key);
+				this.nicknames.put(playerUUID, nickname);
+			}
 		}
 		
 		for (String key: homesConfig.getKeys(true)) {
 			UUID playerUUID = UUID.fromString(key);
 			String locationString = homesConfig.getString(key);
 			this.homes.put(playerUUID, parseLocation(locationString));
+		}
+
+		for (String key: allowlistConfig.getKeys(true)) {
+			UUID playerUUID = UUID.fromString(key);
+			List<UUID> UUIDlist = new ArrayList<UUID>();
+			for (String uuidstr: allowlistConfig.getStringList(key)) {
+				UUIDlist.add(UUID.fromString(uuidstr));
+			}
+			this.allowList.put(playerUUID, UUIDlist);
+		}
+
+		for (String key: uuid2nameConfig.getKeys(true)) {
+			UUID playerUUID = UUID.fromString(key);
+			this.uuid2Names.put(playerUUID, uuid2nameConfig.getString(key));
 		}
 	}
 	
@@ -143,6 +161,16 @@ public class GeneralFunctionPlugin extends JavaPlugin {
 	    	for (UUID playerUUID: this.homes.keySet()) {
 	    		this.customConfig.set("homes." + String.valueOf(playerUUID), stringfyLocation(this.homes.get(playerUUID), false));
 	    	}
+			for (UUID playerUUID: this.allowList.keySet()) {
+				List<String> uuidstringlist = new ArrayList<String>();
+				for (UUID tuuid: this.allowList.get(playerUUID)) {
+					uuidstringlist.add(tuuid.toString());
+				}
+				this.customConfig.set("allowlist." + String.valueOf(playerUUID), uuidstringlist);
+			}
+			for (UUID playerUUID: this.uuid2Names.keySet()) {
+				this.customConfig.set("uuid2name." + String.valueOf(playerUUID), this.uuid2Names.get(playerUUID));
+			}
 	    	
 	        this.customConfig.save(this.customConfigFile);
 	    } catch (IOException ex) {}

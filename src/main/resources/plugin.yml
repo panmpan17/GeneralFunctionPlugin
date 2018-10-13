@@ -4,7 +4,7 @@ version: 1.4
 author: Michael Pan
 commands:
   nick:
-    description: 改變你的暱稱
+    description: 改變你的暱稱，限 12 個字
     usage: /<command> <暱稱>
     aliases: [n]
   lightning:
@@ -13,10 +13,10 @@ commands:
     permission: op
     aliases: [l]
   home:
-    description: /home 傳送到家。 /home s 設定新家。 /home v <玩家名稱> 拜訪其他人家
-    usage: /<command> [s/v]
+    description: 關於家的指令，更多資訊打 /home help
+    usage: /<command> [s|v|help]
     aliases: [h]
   allow-list:
-    description: 列出 /allow-list 相關的指令
+    description: 關於家裡權限，更多資訊打 /allow-list
     usage: /<command> [add|remove|removei|list]
     aliases: [a]
