@@ -16,14 +16,23 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 public class MyListener implements Listener {
     private final GeneralFunctionPlugin plugin;
 
+    public int playersInSleep = 0;
+    public BukkitScheduler scheduler;
+	public BukkitTask morningTask;
+
     public MyListener(GeneralFunctionPlugin plugin) {
         this.plugin = plugin;
+        scheduler = this.plugin.getServer().getScheduler();
     }
 
     public String pickRandomStringFromList(List<String> list) {
@@ -114,8 +123,6 @@ public class MyListener implements Listener {
 
             event.setCancelled(true);
 
-            Player owner = this.plugin.getServer().getPlayer(ownerUUID);
-            
             if (this.plugin.uuid2Names.containsKey(ownerUUID)) {
                 event.getPlayer().sendMessage(ChatColor.RED + "現在在 " + this.plugin.uuid2Names.get(ownerUUID) + " 家，不能建造");
 			}
@@ -183,4 +190,26 @@ public class MyListener implements Listener {
             }
         }
     }
+
+    @EventHandler
+	public void onPlayerSleep(PlayerBedEnterEvent event) {
+		Player player = event.getPlayer();
+        this.plugin.getServer().broadcastMessage(ChatColor.AQUA + player.getDisplayName() + " 在睡覺中");
+        
+        this.playersInSleep +=1;
+        if (this.morningTask == null) {
+            this.morningTask = this.scheduler.runTaskLater(this.plugin, new MyRunnable(this.plugin, this), 100);
+        }
+	}
+	
+	@EventHandler
+	public void onPlayerWake(PlayerBedLeaveEvent event) {
+		if (this.morningTask != null) {
+			this.playersInSleep -= 1;
+			if (this.playersInSleep == 0) {
+				this.morningTask.cancel();
+				this.morningTask = null;
+			}
+		}
+	}
 }
