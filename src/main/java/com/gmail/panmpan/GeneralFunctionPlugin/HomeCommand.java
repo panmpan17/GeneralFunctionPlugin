@@ -26,11 +26,11 @@ public class HomeCommand implements CommandExecutor {
 			this.TeleportHome(sender);
 			return true;
 		}
-		else if (args[0].equalsIgnoreCase("s")) {
+		else if (args[0].equalsIgnoreCase("s") || args[0].equalsIgnoreCase("set")) {
 			this.SetHome(sender);
 			return true;
 		}
-		else if (args[0].equalsIgnoreCase("v")) {
+		else if (args[0].equalsIgnoreCase("v") || args[0].equalsIgnoreCase("visit")) {
 			if (args.length < 2) {
 				sender.sendMessage(ChatColor.RED + "請指定要拜訪的玩家");
 				return true;
@@ -39,11 +39,16 @@ public class HomeCommand implements CommandExecutor {
 			this.VisitHome(sender, args[1]);
 			return true;
 		}
+		else if (args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("check")) {
+			this.checkHome(sender);
+			return true;
+		}
 		else if (args[0].equalsIgnoreCase("help")) {
 			String help = ChatColor.GOLD + "家功能 1.快速傳送 2.玩家拜訪 3.領地保護 (更多資訊在 /allow-list)\n\n";
             help += ChatColor.AQUA + "/home" + ChatColor.WHITE + " 傳送到家裡\n";
-            help += ChatColor.AQUA + "/home s" + ChatColor.WHITE + " 設定家的位置\n";
-            help += ChatColor.AQUA + "/home v <玩家>" + ChatColor.WHITE + " 拜訪別人家裡\n";
+            help += ChatColor.AQUA + "/home s[set]" + ChatColor.WHITE + " 設定家的位置\n";
+            help += ChatColor.AQUA + "/home v[visit] <玩家>" + ChatColor.WHITE + " 拜訪別人家裡\n";
+            help += ChatColor.AQUA + "/home c[check]" + ChatColor.WHITE + " 檢查是否在家裡\n";
 			sender.sendMessage(help);
 			
 			return true;
@@ -108,5 +113,23 @@ public class HomeCommand implements CommandExecutor {
 			targetPlayer.sendMessage(ChatColor.AQUA + player.getDisplayName() + " 來拜訪妳了");
 			return;
 		}
-    }
+	}
+	
+	private void checkHome(CommandSender sender) {
+		Player player = (Player) sender;
+
+		if (this.plugin.homes.containsKey(player.getUniqueId())) {
+			Location home = this.plugin.homes.get(player.getUniqueId());
+
+			if (Math.abs(home.getBlockX() - player.getLocation().getBlockX()) <= 25) {
+                if (Math.abs(home.getBlockZ() - player.getLocation().getBlockZ()) <= 25) {
+					player.sendMessage(ChatColor.AQUA + "在你家");
+					return;
+				}
+			}
+			player.sendMessage(ChatColor.LIGHT_PURPLE + "不在你家");
+			return;
+		}
+		player.sendMessage(ChatColor.RED + "你還沒有家");
+	}
 }
